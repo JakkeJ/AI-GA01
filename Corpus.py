@@ -25,9 +25,7 @@ class Corpus:
         self._corpus_list.append(document)
 
     def delete_corpus_item(self, index):
-        print(len(self._corpus_list))
         self._corpus_list.pop(index)
-        print(len(self._corpus_list))
 
     def save_to_file(self, file_name):
         with open(file_name, "w") as file:

@@ -1,6 +1,5 @@
 from Document import Document
 from Corpus import Corpus
-from pynput.keyboard import *
 from MarkovChain import MarkovChain
 import tkinter as tk
 from tkinter import ttk
@@ -11,6 +10,8 @@ import os
 import subprocess
 import platform
 import time
+from os import system
+from platform import system as platform
 
 class GUI(tk.Tk):
     def __init__(self):
@@ -33,9 +34,9 @@ class GUI(tk.Tk):
         self.bottom_frame.pack(fill='x', side=tk.BOTTOM)
 
         self.seed_word = "your"
-
+        if platform() == 'Darwin':  # Focus issues with MacOS, works in Ubuntu and Windows 11...
+            system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
         self.main_window()
-        self.focus_force()
 
 
     def main_window(self):
@@ -114,6 +115,9 @@ class GUI(tk.Tk):
         if selected_item_index:
             self.corpus.delete_corpus_item(selected_item_index[0])
             self.corpus_listbox.delete(selected_item_index)
+            
+    def save_corpus_to_file(self):
+        self.corpus.save_to_file("corpus_sentences.txt")
 
     def open_settings(self):
         for frame in [self.top_frame, self.middle_frame, self.bottom_frame]:
@@ -136,8 +140,11 @@ class GUI(tk.Tk):
 
         open_file_button = ttk.Button(self.bottom_frame, text="Add File to Corpus", bootstyle="primary", command=self.open_file_dialog)
         open_file_button.pack(padx=5, pady=5, side=tk.TOP)
+        
+        save_corpus_button = ttk.Button(self.bottom_frame, text = "Save corpus sentences to file", bootstyle = "success")
+        save_corpus_button.pack(padx = 5, pady = 5, side = tk.TOP)
 
-        delete_button = ttk.Button(self.bottom_frame, text="Delete Selected File from Corpus", bootstyle="primary", command=self.delete_selected_item)
+        delete_button = ttk.Button(self.bottom_frame, text="Delete Selected File from Corpus", bootstyle="danger", command=self.delete_selected_item)
         delete_button.pack(padx=5, pady=5, side=tk.TOP)
 
         self.seed_word_label = ttk.Label(self.bottom_frame, text = "Seed word - default is 'your'")
@@ -146,6 +153,7 @@ class GUI(tk.Tk):
         self.seed_word_entry = ttk.Entry(self.bottom_frame)
         self.seed_word_entry.pack(padx=5, pady=5, side=tk.TOP)
         self.seed_word_entry.insert(0, self.seed_word)
+        self.focus_force()
 
 if __name__ == "__main__":
     app = GUI()
