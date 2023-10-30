@@ -1745,3 +1745,7 @@ venv/lib/python3.11/site-packages/six-1.16.0.dist-info/top_level.txt
 venv/lib/python3.11/site-packages/six-1.16.0.dist-info/WHEEL
 venv/lib/python3.11/site-packages/six.py
 venv/pyvenv.cfg
+__pycache__/Corpus.cpython-311.pyc
+__pycache__/Document.cpython-311.pyc
+__pycache__/MarkovChain.cpython-311.pyc
+__pycache__/Sentence.cpython-311.pyc
