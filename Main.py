@@ -9,9 +9,6 @@ from tkinter import filedialog
 import os
 import subprocess
 import platform
-import time
-from os import system
-from platform import system as platform
 
 class GUI(tk.Tk):
     def __init__(self):
@@ -34,8 +31,6 @@ class GUI(tk.Tk):
         self.bottom_frame.pack(fill='x', side=tk.BOTTOM)
 
         self.seed_word = "your"
-        if platform() == 'Darwin':  # Focus issues with MacOS, works in Ubuntu and Windows 11...
-            system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
         self.main_window()
 
 
@@ -43,10 +38,9 @@ class GUI(tk.Tk):
         for frame in [self.top_frame, self.middle_frame, self.bottom_frame]:
             for widget in frame.winfo_children():
                 widget.destroy()
-        time.sleep(0.01)
         label = ttk.Label(self.top_frame, text="Markov Chain Text Generator")
         label.pack(padx=5, pady=5, side=tk.LEFT)
-        settings_button = ttk.Button(self.top_frame, text="Settings", command=self.open_settings)
+        settings_button = ttk.Button(self.top_frame, text="Settings", command=self.open_settings, width = 8)
         settings_button.pack(padx=5, pady=5, side=tk.RIGHT)
         sentencebox_label = ttk.Label(self.middle_frame, text = "Generated sentences")
         sentencebox_label.pack(padx = 5, pady = 5, side = tk.TOP)
@@ -57,13 +51,45 @@ class GUI(tk.Tk):
         self.sentence_count_entry = ttk.Spinbox(self.bottom_frame, from_ = 1, to = 10,validate = "key", justify = 'center', validatecommand=(self.register(self._validate), "%P"))
         self.sentence_count_entry.pack(padx=5, pady=5, side=tk.TOP)
         self.sentence_count_entry.insert(0, self.sentence_count)
-        generate_button = ttk.Button(self.bottom_frame, text="Generate sentence!", command=self.generate_and_insert_text)
+        generate_button = ttk.Button(self.bottom_frame, text="Generate sentence", command=self.generate_and_insert_text)
         generate_button.pack(padx=5, pady=5)
-        save_button = ttk.Button(self.bottom_frame, text="Save to file", command=self.save_generated_text)
+        save_button = ttk.Button(self.bottom_frame, text="Save to file", bootstyle = "success" ,command=self.save_generated_text)
         save_button.pack(padx=5, pady=5)
         delete_button = ttk.Button(self.bottom_frame, text = "Delete generated sentences", bootstyle="danger", command=self.delete_generated_text)
         delete_button.pack(padx = 5, pady = 5, side = tk.TOP)
-        self.focus_force()
+
+    def open_settings(self):
+        for frame in [self.top_frame, self.middle_frame, self.bottom_frame]:
+            for widget in frame.winfo_children():
+                widget.destroy()
+        settings_label = ttk.Label(self.top_frame, text="Markov Chain Text Generator - Settings")
+        settings_label.pack(padx=5, pady=5, side = tk.LEFT)
+
+        back_button = ttk.Button(self.top_frame, text = "Back", bootstyle = "primary", command = self.back_and_update, width = 8)
+        back_button.pack(padx=5, pady=5, side=tk.RIGHT)
+
+        self.corpus_listbox_label = ttk.Label(self.middle_frame, text = "Corpus files")
+        self.corpus_listbox_label.pack(padx = 5, pady = 5, side = tk.TOP)
+        self.corpus_listbox = tk.Listbox(self.middle_frame, selectmode = tk.SINGLE, height = 20)
+        self.corpus_listbox.pack(fill = 'both', padx = 5, pady = 5)
+        for item in self.corpus.corpus_list:
+            self.corpus_listbox.insert(tk.END, item.file_path)
+
+        open_file_button = ttk.Button(self.bottom_frame, text="Add File to Corpus", bootstyle="primary", command=self.open_file_dialog)
+        open_file_button.pack(padx=5, pady=5, side=tk.TOP)
+        
+        save_corpus_button = ttk.Button(self.bottom_frame, text = "Save corpus sentences to file", bootstyle = "success")
+        save_corpus_button.pack(padx = 5, pady = 5, side = tk.TOP)
+
+        delete_button = ttk.Button(self.bottom_frame, text="Delete Selected File from Corpus", bootstyle="danger", command=self.delete_selected_item)
+        delete_button.pack(padx=5, pady=5, side=tk.TOP)
+
+        self.seed_word_label = ttk.Label(self.bottom_frame, text = "Seed word - default is 'your'")
+        self.seed_word_label.pack(padx = 5, pady = 5, side = tk.TOP)
+
+        self.seed_word_entry = ttk.Entry(self.bottom_frame)
+        self.seed_word_entry.pack(padx=5, pady=5, side=tk.TOP)
+        self.seed_word_entry.insert(0, self.seed_word)
         
     def _validate(self, P):
         return P.isdigit()
@@ -118,42 +144,6 @@ class GUI(tk.Tk):
             
     def save_corpus_to_file(self):
         self.corpus.save_to_file("corpus_sentences.txt")
-
-    def open_settings(self):
-        for frame in [self.top_frame, self.middle_frame, self.bottom_frame]:
-            for widget in frame.winfo_children():
-                widget.destroy()
-        time.sleep(0.01)
-        settings_label = ttk.Label(self.top_frame, text="Markov Chain Text Generator - Settings")
-        settings_label.pack(padx=5, pady=5, side = tk.LEFT)
-
-        back_button = ttk.Button(self.top_frame, text = "Back", bootstyle = "primary", command = self.back_and_update)
-        back_button.pack(padx=5, pady=5, side=tk.RIGHT)
-
-        self.corpus_listbox_label = ttk.Label(self.middle_frame, text = "Corpus files")
-        self.corpus_listbox_label.pack(padx = 5, pady = 5, side = tk.TOP)
-        self.corpus_listbox = tk.Listbox(self.middle_frame, selectmode = tk.SINGLE, height = 20)
-        self.corpus_listbox.pack(fill = 'both', padx = 5, pady = 5)
-
-        for item in self.corpus.corpus_list:
-            self.corpus_listbox.insert(tk.END, item.file_path)
-
-        open_file_button = ttk.Button(self.bottom_frame, text="Add File to Corpus", bootstyle="primary", command=self.open_file_dialog)
-        open_file_button.pack(padx=5, pady=5, side=tk.TOP)
-        
-        save_corpus_button = ttk.Button(self.bottom_frame, text = "Save corpus sentences to file", bootstyle = "success")
-        save_corpus_button.pack(padx = 5, pady = 5, side = tk.TOP)
-
-        delete_button = ttk.Button(self.bottom_frame, text="Delete Selected File from Corpus", bootstyle="danger", command=self.delete_selected_item)
-        delete_button.pack(padx=5, pady=5, side=tk.TOP)
-
-        self.seed_word_label = ttk.Label(self.bottom_frame, text = "Seed word - default is 'your'")
-        self.seed_word_label.pack(padx = 5, pady = 5, side = tk.TOP)
-
-        self.seed_word_entry = ttk.Entry(self.bottom_frame)
-        self.seed_word_entry.pack(padx=5, pady=5, side=tk.TOP)
-        self.seed_word_entry.insert(0, self.seed_word)
-        self.focus_force()
 
 if __name__ == "__main__":
     app = GUI()
