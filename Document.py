@@ -20,7 +20,8 @@ class Document:
             for abbreviation in abbreviations:
                 content = content.replace(abbreviation, abbreviation.replace('.', '__PERIOD__'))
 
-            content = re.sub(r'[^\w\s\n.?!-]+', ' ', content)
+            content = re.sub(r'[^\w\s\n—-]+´`', ' ', content)
+            content = re.sub(r'[\d,”“]', '', content)
             self.sentences = re.split(r'[.!?]', content)
             for abbreviation in abbreviations:
                 self.sentences = [sentence.replace(abbreviation.replace('.', '__PERIOD__'), abbreviation) for sentence in self.sentences]
@@ -64,6 +65,7 @@ def replace_contractions(text):
         "we'd": "we would",
         "we're": "we are",
         "we've": "we have",
+        "wasn't": "was not",
         "weren't": "were not",
         "what's": "what is",
         "where's": "where is",
@@ -72,7 +74,8 @@ def replace_contractions(text):
         "wouldn't": "would not",
         "you'd": "you would",
         "you'll": "you will",
-        "you're": "you are"
+        "you're": "you are",
+        "must'nt": "must not"
     }
 
     contractions_re = re.compile('(%s)' % '|'.join(contractions.keys()))

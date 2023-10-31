@@ -28,6 +28,5 @@ class Corpus:
         self._corpus_list.pop(index)
 
     def save_to_file(self, file_name):
-        with open(file_name, "w") as file:
-            for document in self._corpus_list:
-                document.store_sentences_as_file(file)
+        for document in self._corpus_list:
+            document.store_sentences_as_file(file_name)
